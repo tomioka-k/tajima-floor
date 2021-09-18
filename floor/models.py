@@ -1,6 +1,7 @@
+from django.core import validators
 import matplotlib.pyplot as plt
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.utils.safestring import mark_safe
 from .function import upload_product_image_path, upload_product_triple_image_path
 from .views_modules.hsv_report import get_hsv_report, plt2png
@@ -85,10 +86,21 @@ class Product(models.Model):
 
 class ProductReport(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=upload_product_image_path)
+    image = models.ImageField(
+        upload_to=upload_product_image_path, help_text="ファイル名は英数字")
     triple_image = models.ImageField(
         upload_to=upload_product_triple_image_path, blank=True, null=True)
     hsv_report = models.BinaryField(blank=True, null=True)
+
+    rgb1_r = models.FloatField(blank=True, null=True)
+    rgb1_g = models.FloatField(blank=True, null=True)
+    rgb1_b = models.FloatField(blank=True, null=True)
+    rgb2_r = models.FloatField(blank=True, null=True)
+    rgb2_g = models.FloatField(blank=True, null=True)
+    rgb2_b = models.FloatField(blank=True, null=True)
+    rgb3_r = models.FloatField(blank=True, null=True)
+    rgb3_g = models.FloatField(blank=True, null=True)
+    rgb3_b = models.FloatField(blank=True, null=True)
 
     h_per_5 = models.FloatField(blank=True, null=True)
     h_per_50 = models.FloatField(blank=True, null=True)
@@ -100,15 +112,9 @@ class ProductReport(models.Model):
     v_per_50 = models.FloatField(blank=True, null=True)
     v_per_95 = models.FloatField(blank=True, null=True)
 
-    rgb1_r = models.FloatField(blank=True, null=True)
-    rgb1_g = models.FloatField(blank=True, null=True)
-    rgb1_b = models.FloatField(blank=True, null=True)
-    rgb2_r = models.FloatField(blank=True, null=True)
-    rgb2_g = models.FloatField(blank=True, null=True)
-    rgb2_b = models.FloatField(blank=True, null=True)
-    rgb3_r = models.FloatField(blank=True, null=True)
-    rgb3_g = models.FloatField(blank=True, null=True)
-    rgb3_b = models.FloatField(blank=True, null=True)
+    class Meta:
+        verbose_name = "商品レポート"
+        verbose_name_plural = "商品レポート"
 
     def __str__(self):
         return "{}-{}".format(self.product, self.image)
@@ -146,4 +152,16 @@ class ProductReport(models.Model):
         self.v_per_5 = hsv['v_per_5']
         self.v_per_50 = hsv['v_per_50']
         self.v_per_95 = hsv['v_per_95']
+        super(ProductReport, self).save(**kwargs)
+        rgb = imagereport.image_convert_rgb(
+            str(BASE_DIR)+str(self.triple_image.url))
+        self.rgb1_r = rgb['rgb1']['r']
+        self.rgb1_g = rgb['rgb1']['g']
+        self.rgb1_b = rgb['rgb1']['b']
+        self.rgb2_r = rgb['rgb2']['r']
+        self.rgb2_g = rgb['rgb2']['g']
+        self.rgb2_b = rgb['rgb2']['b']
+        self.rgb3_r = rgb['rgb3']['r']
+        self.rgb3_g = rgb['rgb3']['g']
+        self.rgb3_b = rgb['rgb3']['b']
         super(ProductReport, self).save(**kwargs)

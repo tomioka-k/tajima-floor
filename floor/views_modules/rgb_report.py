@@ -2,6 +2,7 @@ import numpy as np
 import PIL.ImageDraw
 import scipy.cluster
 import os
+import cv2
 
 
 class ImageReport:
@@ -45,8 +46,34 @@ class ImageReport:
             pos = [p1, p2]
             draw.rectangle(pos, fill=color)
 
-        # im.save('zzz.png')
         return im
+
+    def image_convert_rgb(self, triple_image_path=None):
+
+        def rgb_mean_value(from_x, from_y, to_x, to_y):
+
+            # y:y+h, x:x+w　の順で設定
+            imgBox = image[from_y: to_y, from_x: to_x]
+            # RGB平均値を出力
+            # flattenで一次元化しmeanで平均を取得
+            b = imgBox.T[0].flatten().mean()
+            g = imgBox.T[1].flatten().mean()
+            r = imgBox.T[2].flatten().mean()
+            return {"r": r, "g": g, "b": b}
+
+        # 対象画像読み込み
+        image = cv2.imread(triple_image_path, cv2.IMREAD_COLOR)
+        rgb1 = rgb_mean_value(0, 0, 10, 10)
+        rgb2 = rgb_mean_value(101, 0, 102, 100)
+        rgb3 = rgb_mean_value(201, 0, 202, 100)
+
+        rgb_value = {
+            "rgb1": rgb1,
+            "rgb2": rgb2,
+            "rgb3": rgb3,
+        }
+
+        return rgb_value
 
 
 if __name__ == "__main__":

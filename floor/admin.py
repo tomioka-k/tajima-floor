@@ -1,9 +1,10 @@
 from django.contrib import admin
+from django.db.models import fields
 from .models import Series, Variety, Product, ProductReport
 from django.utils.safestring import mark_safe
 
 from import_export import resources
-from import_export.admin import ImportExportMixin
+from import_export.admin import ExportMixin, ImportExportMixin
 
 
 class SeriesResource(resources.ModelResource):
@@ -23,6 +24,29 @@ class ProductResource(resources.ModelResource):
         model = Product
         import_id_fields = ('code', )
         fields = ('code', 'name', 'series', 'sales_unit')
+
+
+class ProductReportResource(resources.ModelResource):
+    class Meta:
+        model = ProductReport
+        fields = (
+            'product__code', 'product__name',
+            'rgb1_r', 'rgb1_g', 'rgb1_b',
+            'rgb2_r', 'rgb2_g', 'rgb2_b',
+            'rgb3_r', 'rgb3_g', 'rgb3_b',
+            'h_per_5', 'h_per_50', 'h_per_95',
+            's_per_5', 's_per_50', 's_per_95',
+            'v_per_5', 'v_per_50', 'v_per_95'
+        )
+        export_order = (
+            'product__code', 'product__name',
+            'rgb1_r', 'rgb1_g', 'rgb1_b',
+            'rgb2_r', 'rgb2_g', 'rgb2_b',
+            'rgb3_r', 'rgb3_g', 'rgb3_b',
+            'h_per_5', 'h_per_50', 'h_per_95',
+            's_per_5', 's_per_50', 's_per_95',
+            'v_per_5', 'v_per_50', 'v_per_95'
+        )
 
 
 @admin.register(Series)
@@ -48,12 +72,14 @@ class ProductAdmin(ImportExportMixin, admin.ModelAdmin):
 
 
 @admin.register(ProductReport)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = ProductReportResource
+    search_fields = ('product', )
     list_display = (
-        'h_per_5', 'display_image', "display_triple_image", 'scheme_image_tag'
+        'product', 'display_image', "display_triple_image", 'scheme_image_tag'
     )
     readonly_fields = (
-        'display_image', 'scheme_image_tag', "triple_image",
+        'display_image', "display_triple_image", 'scheme_image_tag',
         'rgb1_r', 'rgb1_g', 'rgb1_b',
         'rgb2_r', 'rgb2_g', 'rgb2_b',
         'rgb3_r', 'rgb3_g', 'rgb3_b',

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-gm94!9fk1^s93=5nzht(af$wg%!ce_ya9d56vspo#h7b$53w^u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'yuka',
+    'floor',
     'import_export',
     'django_cleanup.apps.CleanupConfig',
 ]
