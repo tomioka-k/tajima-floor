@@ -8,7 +8,8 @@ admin.site.site_header = 'Floor Tajima'
 admin.site.index_title = 'メニュー'
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('tajima/', admin.site.urls),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS) + \
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
