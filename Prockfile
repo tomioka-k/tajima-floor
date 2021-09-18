@@ -1,1 +1,0 @@
-web: guniconr config.wsgi --log-file -
